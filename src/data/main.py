@@ -118,6 +118,8 @@ def ui():
 
 if __name__ == '__main__':
     connect()
+    print_projects()
+    print_users()
     print("Welcome to add your work time")
     new_input = 0
     while new_input == 0:
