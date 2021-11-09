@@ -3,3 +3,6 @@ src/data/database.ini
 venv/
 .idea/
 __pycache__
+variable.tf
+terraform.tfvars
+.env
