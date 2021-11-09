@@ -16,25 +16,22 @@ provider "google" {
   zone    = var.zone
 }
 
-#Luodaan VPC
-#TODO ASETA ARVOT
+#Luodaan VPC network nimeltä project-network, luodaan sille subnet erikseen
 resource "google_compute_network" "vpc_network" {
   name                    = "project-network"
   auto_create_subnetworks = "false"
 }
 
-#Luodaan VPC subnetwork
-#TODO ASETA ARVOT
+#Luodaan project-networkille subnetwork nimeltä subnet-1
 resource "google_compute_subnetwork" "vpc_subnetwork" {
-  name          = "project-subnetwork"
+  name          = "subnet-1"
   ip_cidr_range = "10.2.0.0/16"
   region        = var.region
   network       = google_compute_network.vpc_network.name
 }
 
-#Luodaan firewall-sääntö emailille
-#TODO ASETA OIKEAT SÄÄNNÖT
-resource "google_compute_firewall" "vpc_firewall" {
+#Luodaan EGRESS firewall-sääntö emailille
+resource "google_compute_firewall" "vpc_firewall_1" {
   name    = "project-email"
   network = google_compute_network.vpc_network.name
 
@@ -49,9 +46,8 @@ resource "google_compute_firewall" "vpc_firewall" {
   target_tags = ["project-allow-email"]
 }
 
-#Luodaan Firewall-sääntö ingress shh, voi olla oikeasti ihan tarpeeton mut jätin varuiksi
-#TODO ASETA OIKEAT SÄÄNNÖT
-resource "google_compute_firewall" "vpc_firewall" {
+#Luodaan INGRESS firewall-sääntö SSH:n käyttämiseen
+resource "google_compute_firewall" "vpc_firewall_2" {
   name    = "project-ssh"
   network = google_compute_network.vpc_network.name
 
@@ -64,9 +60,8 @@ resource "google_compute_firewall" "vpc_firewall" {
 }
 
 #Luodaan instanssi
-#TODO ASETA ARVOT
 resource "google_compute_instance" "vm_instance" {
-  name         = "terraform-instance"
+  name         = "hour-instance"
   machine_type = "f1-micro"
   tags         = ["project-allow-email", "project-allow-ssh"]
 
@@ -83,23 +78,6 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
-  metadata_startup_script = file("startup.sh")
-}
-
-#pubsub
-resource "google_pubsub_topic" "topic" {
-  name = "job-topic"
-}
-
-#Cron job joka käynnistää pubsubin
-resource "google_cloud_scheduler_job" "job" {
-  name        = "project-job"
-  description = "This job executes every night at 00:00"
-  schedule    = "0 0 * * *"
-
-  pubsub_target {
-    # topic.id is the topic's full resource name.
-    topic_name = google_pubsub_topic.topic.id
-    data       = base64encode("test")
-  }
+  #startup.sh:n sisältö ei vielä relevantti
+  #metadata_startup_script = file("startup.sh")
 }

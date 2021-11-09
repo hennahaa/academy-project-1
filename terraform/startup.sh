@@ -1,3 +1,5 @@
+ #tämä saattaa joutua vaihtoon, jos nodea ei käytetäkään
+ 
  #! /bin/bash
 sudo su -
 umask 077
