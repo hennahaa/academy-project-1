@@ -111,7 +111,8 @@ def ui():
         user_id = input("Give user id: ")
         comment = input("Give comment (max 255 word): ")
         temperature = check_weather()
-        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temperature)
+        temp = round(temperature, 2)
+        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temp)
     else:
         print(f"Your start date, {start_date}, can't be newer than your end_date, {end_date}.")
 
@@ -122,4 +123,4 @@ if __name__ == '__main__':
     new_input = 0
     while new_input == 0:
         ui()
-        new_input =  input("Do you want add another work time (0 = continue): ")
+        new_input =  int(input("Do you want add another work time (0 = continue): "))
