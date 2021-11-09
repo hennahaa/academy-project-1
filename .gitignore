@@ -6,3 +6,5 @@ __pycache__
 variable.tf
 terraform.tfvars
 .env
+.terraform.lock.hcl
+.terraform
