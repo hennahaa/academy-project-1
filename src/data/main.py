@@ -98,20 +98,24 @@ def check_weather():
     return celsius_temp
 
 def ui():
-    
-    start_date = (input("Give start date (dd-mm-yy): "))
-    start_time = input("Give start time (hh:mm): ")
+    print_users()
+    user_id = input("Give user id: ")
+    currenttime = datetime.datetime.now()
+    example_time = str(currenttime.hour) + ':' + str(currenttime.minute)
+    currentdate = datetime.date.today()
+    example_date = currentdate.strftime('%d-%m-%y')
+    start_date = input(f"Give start date ({example_date}): ")
+    start_time = input(f"Give start time ({example_time}): ")
     end_date = input("Give end date (dd-mm-yy): ")
     end_time = input("Give end time (hh:mm): ")
     check_date_value = check_date(start_date,end_date)
     if check_date_value is True:
         print_projects()
         project_id = input("Give project id: ")
-        print_users()
-        user_id = input("Give user id: ")
-        comment = input("Give comment (max 255 word): ")
+        comment = input("Give comment (max 255 letters): ")
         temperature = check_weather()
-        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temperature)
+        temp = round(temperature, 2)
+        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temp)
     else:
         print(f"Your start date, {start_date}, can't be newer than your end_date, {end_date}.")
 
@@ -124,4 +128,4 @@ if __name__ == '__main__':
     new_input = 0
     while new_input == 0:
         ui()
-        new_input =  input("Do you want add another work time (0 = continue): ")
+        new_input =  int(input("Do you want add another work time (0 = continue): "))
