@@ -139,7 +139,7 @@ def check_users(user_id):
         try:
             con = psycopg2.connect(**config())
             cur = con.cursor()
-            SQL = "SELECT user_id FROM users WHERE user_id = %s;"
+            SQL = "SELECT user_id, user_first_name, user_last_name FROM users WHERE user_id = %s;"
             query_values = user_id
             cur.execute(SQL, query_values)
             row = cur.fetchone()
@@ -147,7 +147,7 @@ def check_users(user_id):
             if row is None:
                 print_users()
                 user_id = input(f"User id {user_id} was not valid, give another user id: ")
-            
+
             cur.close()
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -155,6 +155,7 @@ def check_users(user_id):
         finally:
             if con is not None:
                 con.close()
+    print(f"{row[1]} {row[2]}")
     return user_id
 
 # inset one row to worktime -table
@@ -189,7 +190,13 @@ def check_weather():
     temp_data = ''
     temp_data = data_info['main']['temp']
     celsius_temp = int(temp_data) - 273.15
-    return celsius_temp
+    tempera = round(celsius_temp, 2)
+    for data in data_info['weather']:
+            weather_main = data['main']
+            weather_desc = data['description']
+    
+    temp = (f"{weather_main}, {weather_desc} temperature is {tempera} C")
+    return temp
 
 # user interface where user working time information is asked
 
@@ -222,8 +229,7 @@ def ui():
         project_id = check_projectid(project_id)
         comment = input("Give comment (max 255 letters): ")
         temperature = check_weather()
-        temp = round(temperature, 2)
-        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temp)
+        insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,comment,temperature)
     else:
         print(f"Your start values, {start_date} {start_time}, can't be newer than your end values, {end_date} {end_time}.")
 
@@ -234,4 +240,4 @@ if __name__ == '__main__':
     new_input = 0
     while new_input == 0:
         ui()
-        new_input =  int(input("Do you want add another work time (0 = continue): "))
+        new_input =  int(input("Do you want add another work time (0 = continue, other number = stop): "))
