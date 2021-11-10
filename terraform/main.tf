@@ -30,6 +30,7 @@ resource "google_compute_subnetwork" "vpc_subnetwork" {
   network       = google_compute_network.vpc_network.name
 }
 
+
 #Luodaan EGRESS firewall-sääntö emailille
 resource "google_compute_firewall" "vpc_firewall_1" {
   name    = "project-email"
@@ -40,11 +41,12 @@ resource "google_compute_firewall" "vpc_firewall_1" {
 
   allow {
     protocol = "tcp"
-    ports    = ["2525"]
+    ports    = ["587"]
   }
 
   target_tags = ["project-allow-email"]
 }
+
 
 #Luodaan INGRESS firewall-sääntö SSH:n käyttämiseen
 resource "google_compute_firewall" "vpc_firewall_2" {
@@ -65,11 +67,24 @@ resource "google_storage_bucket" "storage_bucket" {
   location = "EUROPE-NORTH1"
 }
 
-#lataa tiedoston buckettiin
-#Ladataan testitiedosto buckettiin
-resource "google_storage_bucket_object" "testi" {
-  name   = "testi.txt"
-  source = "testi.txt"
+#Ladataan send_hours.py buckettiin
+resource "google_storage_bucket_object" "send_hours" {
+  name   = "send_hours.py"
+  source = "send_hours.py"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan cron1.py buckettiin
+resource "google_storage_bucket_object" "cron" {
+  name   = "cron1.py"
+  source = "cron1.py"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan .env buckettiin
+resource "google_storage_bucket_object" "env" {
+  name   = ".env"
+  source = ".env"
   bucket = google_storage_bucket.storage_bucket.name
 }
 
@@ -92,28 +107,13 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
+  service_account {
+    email  = var.service_acco
+    scopes = ["cloud-platform"]
+  }
+
   #startup.sh:n lataa paketit ja tiedostot instanssiin
   metadata_startup_script = file("startup.sh")
-  allow_stopping_for_update = true
-
-
-  #tällä ssh-viritelmällä yritin lataa lokaalisti tiedostoa
-  metadata = {
-    ssh-keys = "${var.ssh_user}:${file(var.public_key_path)}"
-  }
-  
-
-  provisioner "file" {
-    source      = "testi.txt"
-    destination = "testi.txt"
-  }
-
-  connection {
-    type        = "ssh"
-    host        = google_compute_instance.vm_instance.network_interface.0.access_config.0.nat_ip
-    user        = var.ssh_user
-    private_key = file(var.private_key_path)
-    agent       = "false"
-    }
+  #allow_stopping_for_update = true
 
 }
