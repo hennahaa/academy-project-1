@@ -95,6 +95,7 @@ def check_weather():
     temp_data = ''
     temp_data = data_info['main']['temp']
     celsius_temp = int(temp_data) - 273.15
+    print(f"Its {celsius_temp:.2f} celcius")
     return celsius_temp
 
 def ui():
@@ -122,10 +123,9 @@ def ui():
 
 if __name__ == '__main__':
     connect()
-    print_projects()
-    print_users()
-    print("Welcome to add your work time")
-    new_input = 0
-    while new_input == 0:
-        ui()
-        new_input =  int(input("Do you want add another work time (0 = continue): "))
+    check_weather()
+    #print("Welcome! Add your work time")
+    #new_input = 0
+    #while new_input == 0:
+    #    ui()
+    #    new_input =  int(input("Do you want add another work time (0 = continue): "))
