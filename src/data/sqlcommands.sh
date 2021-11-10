@@ -49,3 +49,28 @@ CREATE TABLE worktime (
 SELECT * FROM users;
 SELECT * FROM projects;
 SELECT * FROM worktime;
+
+#change datetime datatype into date and time:
+ALTER TABLE worktime
+ALTER COLUMN start_time TYPE TIME
+USING start_time::time;
+
+ALTER TABLE worktime
+ALTER COLUMN end_time TYPE time
+USING end_time::time without time zone;
+
+#could not change data type, lets drop the table and create new:
+
+DROP TABLE worktime;
+
+#create new:
+
+CREATE TABLE worktime (
+    start_date DATE NOT NULL, 
+    start_time TIME NOT NULL, 
+    end_date DATE NOT NULL, 
+    end_time TIME NOT NULL, 
+    assignment VARCHAR(255) NOT NULL,
+    weather VARCHAR(255), 
+    project_id INTEGER REFERENCES projects (project_id) NOT NULL, 
+    user_id INTEGER REFERENCES users (user_id) NOT NULL);

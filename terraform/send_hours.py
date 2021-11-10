@@ -4,6 +4,58 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import os
+import psycopg2
+from config import config
+
+#TODO lisää tuntien ja vastaanottajan haku sql instanssista
+
+def connect():
+    con = None
+
+    try:
+        con = psycopg2.connect(**config())
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if con is not None:
+            con.close()
+
+def print_projects():
+    con = None
+
+    try:
+        con = psycopg2.connect(**config())
+        cur = con.cursor()
+        SQL = "SELECT * FROM projects;"
+        cur.execute(SQL)
+        row = cur.fetchone()
+
+        while row is not None:
+            print(row)
+            row = cur.fetchone()
+        
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if con is not None:
+            con.close()
+
+#kovakoodattua mockkitietoa
+start_date  = "24-12-2021"
+start_time = "07:42"
+end_date  = "24-12-2021"
+end_time = "16:12"
+assignment = "Tunkkausta"
+weather = "Snowy"
+#project_id = 3
+#user_id = 2
+#ID:den avulla tehdään SQL kysely jolla saadaan tauluista nimet
+project_name = "Ylläpitopainajainen"
+user_name = "Esimerkki"
+
+# KOVAKOODATTUA TESTIJUTTUA YLLÄ, POISTA LOPUKSI
 
 load_dotenv()
 
@@ -46,3 +98,4 @@ def send_email():
 
 #emailin lähetyksen suoritus
 send_email()
+print_projects()

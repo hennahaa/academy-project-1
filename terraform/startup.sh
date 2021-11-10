@@ -9,3 +9,8 @@ sudo apt -y install python3-pip
 sudo pip3 install python-dotenv
 sudo pip3 install python-crontab
 python cron1.py
+
+
+#sudo apt-get install postgresql-client
+#export dbpass=`gcloud beta secrets versions access 1 --secret="projekti1"`
+#psql "sslmode=disable dbname=tuntikirjaus user=postgres hostaddr=10.0.1.3 password=$dbpass"
