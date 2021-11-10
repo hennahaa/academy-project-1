@@ -59,6 +59,20 @@ resource "google_compute_firewall" "vpc_firewall_2" {
   target_tags = ["project-allow-ssh"]
 }
 
+#Luodaan Bucket
+resource "google_storage_bucket" "storage_bucket" {
+  name     = "projekti_ampari"
+  location = "EUROPE-NORTH1"
+}
+
+#lataa tiedoston buckettiin
+#Ladataan testitiedosto buckettiin
+resource "google_storage_bucket_object" "testi" {
+  name   = "testi.txt"
+  source = "testi.txt"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
 #Luodaan instanssi
 resource "google_compute_instance" "vm_instance" {
   name         = "hour-instance"
@@ -78,6 +92,28 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
-  #startup.sh:n sisältö ei vielä relevantti
-  #metadata_startup_script = file("startup.sh")
+  #startup.sh:n lataa paketit ja tiedostot instanssiin
+  metadata_startup_script = file("startup.sh")
+  allow_stopping_for_update = true
+
+
+  #tällä ssh-viritelmällä yritin lataa lokaalisti tiedostoa
+  metadata = {
+    ssh-keys = "${var.ssh_user}:${file(var.public_key_path)}"
+  }
+  
+
+  provisioner "file" {
+    source      = "testi.txt"
+    destination = "testi.txt"
+  }
+
+  connection {
+    type        = "ssh"
+    host        = google_compute_instance.vm_instance.network_interface.0.access_config.0.nat_ip
+    user        = var.ssh_user
+    private_key = file(var.private_key_path)
+    agent       = "false"
+    }
+
 }
