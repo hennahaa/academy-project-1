@@ -9,3 +9,4 @@ terraform.tfvars
 .terraform.lock.hcl
 .terraform
 terraform.tfstate*
+database.ini
