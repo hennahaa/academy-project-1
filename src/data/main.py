@@ -3,6 +3,8 @@ from config import config
 import json
 import urllib.request
 import datetime
+from dotenv import load_dotenv
+import os
 
 def connect():
     con = None
@@ -90,7 +92,10 @@ def insert_worktime(start_date,start_time,end_date,end_time,project_id,user_id,c
             con.close()
 
 def check_weather():
-    weather_file = urllib.request.urlopen("https://api.openweathermap.org/data/2.5/weather?lat=60.18&lon=24.94&appid=e8b0924d5a0ce89fd664d80238a253c3")
+    load_dotenv()
+    app_key=os.getenv("APP_KEY")
+    search_url = f"https://api.openweathermap.org/data/2.5/weather?lat=60.18&lon=24.94&appid={app_key}"
+    weather_file = urllib.request.urlopen(search_url)
     data_info = json.loads(weather_file.read())
     temp_data = ''
     temp_data = data_info['main']['temp']
@@ -102,13 +107,13 @@ def ui():
     print_users()
     user_id = input("Give user id: ")
     currenttime = datetime.datetime.now()
-    example_time = str(currenttime.hour) + ':' + str(currenttime.minute)
+    example_time = str(currenttime.hour) + ':' + str(currenttime.minute).zfill(2)
     currentdate = datetime.date.today()
     example_date = currentdate.strftime('%d-%m-%y')
     start_date = input(f"Give start date ({example_date}): ")
     start_time = input(f"Give start time ({example_time}): ")
-    end_date = input("Give end date (dd-mm-yy): ")
-    end_time = input("Give end time (hh:mm): ")
+    end_date = input(f"Give end date ({example_date}): ")
+    end_time = input(f"Give end time ({example_time}): ")
     check_date_value = check_date(start_date,end_date)
     if check_date_value is True:
         print_projects()
