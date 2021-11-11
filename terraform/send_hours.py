@@ -123,7 +123,7 @@ RECEIVER = os.getenv('RECEIVER_POSTI')
 def get_data():
     pass
 
-def send_email():
+def send_email(id):
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
 
@@ -140,9 +140,7 @@ def send_email():
     msg['To'] = toaddr
     msg['Subject'] = "Tämän päivän työtunnit!"
 
-    #tää pitäis toimia loppuversiossa
-    #body = get_data()
-    body = tulostaja(3)
+    body = tulostaja(id)
     msg.attach(MIMEText(body, 'plain'))
 
     text = msg.as_string()
@@ -160,11 +158,12 @@ def tulostaja(user_id):
 if __name__=="__main__":
     #print_projects()
     #send_email()
-    id = 0
+    #id = 1
     #print(work_time(id))
     #print(user(id))
     #print(saa())
     #print(tulostaja(id))
     for i in range(1, 4):
         print(tulostaja(i))
+        send_email(i)
 
