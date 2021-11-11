@@ -30,6 +30,7 @@ resource "google_compute_subnetwork" "vpc_subnetwork" {
   network       = google_compute_network.vpc_network.name
 }
 
+
 #Luodaan EGRESS firewall-sääntö emailille
 resource "google_compute_firewall" "vpc_firewall_1" {
   name    = "project-email"
@@ -40,11 +41,12 @@ resource "google_compute_firewall" "vpc_firewall_1" {
 
   allow {
     protocol = "tcp"
-    ports    = ["2525"]
+    ports    = ["587"]
   }
 
   target_tags = ["project-allow-email"]
 }
+
 
 #Luodaan INGRESS firewall-sääntö SSH:n käyttämiseen
 resource "google_compute_firewall" "vpc_firewall_2" {
@@ -57,6 +59,33 @@ resource "google_compute_firewall" "vpc_firewall_2" {
   }
 
   target_tags = ["project-allow-ssh"]
+}
+
+#Luodaan Bucket
+resource "google_storage_bucket" "storage_bucket" {
+  name     = "projekti_ampari"
+  location = "EUROPE-NORTH1"
+}
+
+#Ladataan send_hours.py buckettiin
+resource "google_storage_bucket_object" "send_hours" {
+  name   = "send_hours.py"
+  source = "send_hours.py"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan cron1.py buckettiin
+resource "google_storage_bucket_object" "cron" {
+  name   = "cron1.py"
+  source = "cron1.py"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan .env buckettiin
+resource "google_storage_bucket_object" "env" {
+  name   = ".env"
+  source = ".env"
+  bucket = google_storage_bucket.storage_bucket.name
 }
 
 #Luodaan instanssi
@@ -77,5 +106,14 @@ resource "google_compute_instance" "vm_instance" {
     access_config {
     }
   }
+
+  service_account {
+    email  = var.service_acco
+    scopes = ["cloud-platform"]
+  }
+
+  #startup.sh:n lataa paketit ja tiedostot instanssiin
   metadata_startup_script = file("startup.sh")
+  #allow_stopping_for_update = true
+
 }

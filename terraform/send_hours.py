@@ -1,3 +1,4 @@
+# coding=utf-8
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -5,11 +6,6 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 from config import config
-
-
-
-
-#KOVAKOODATTUA TESTIJUTTUA ALLA, POISTA LOPUKSI
 
 #TODO lisää tuntien ja vastaanottajan haku sql instanssista
 
@@ -88,17 +84,12 @@ def send_email():
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
-    msg['Subject'] = "Tuntikirjauksesi!"
+    msg['Subject'] = "Tämä on testi!"
 
     #tää pitäis toimia loppuversiossa
     #body = get_data()
-
-    body = ''
-    body += "Hello World! Näin monta tuntia tulit tehneeksi:\n"
-    body += "-"*len(body)
-    body += "\n"
-    body += "Aloitusaika         Lopetusaika         Projekti       Sää     Selite\n"
-    body += f"{start_date}{start_time:<20} {end_date:<10} {end_time:<10} {weather:<10} {assignment}"
+    body = 'Hello World!'
+    
     msg.attach(MIMEText(body, 'plain'))
 
     text = msg.as_string()
