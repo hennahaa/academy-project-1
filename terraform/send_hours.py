@@ -5,36 +5,32 @@ from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 import os
 import psycopg2
-from config import config
 import datetime
+#from secretmanager import access_secret_version
 
 load_dotenv()
 
-def connect():
+#yhteyden asetusten määritys
+def connection():
+    return psycopg2.connect(host="192.168.224.3", database="tuntikirjaus", user="postgres", password=os.getenv('KANTA_SALA'))
+
+#Hakee kaikki käyttäjät-listassa olevat henklilöt ja palauttaa siitä listan tupleja
+def get_people_info():
     con = None
 
     try:
-        con = psycopg2.connect(**config())
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if con is not None:
-            con.close()
-
-def print_projects():
-    con = None
-
-    try:
-        con = psycopg2.connect(**config())
+        con = connection()
         cur = con.cursor()
         SQL = "SELECT * FROM users;"
         cur.execute(SQL)
-        row = cur.fetchone()
+        rows = cur.fetchall()
 
-        while row is not None:
-            print(row)
-            row = cur.fetchone()   
+        user_info = []
+        for row in rows:
+            user_info.append((row[0], f"{row[1]} {row[2]}", row[3]))
         cur.close()
+
+        return user_info
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -42,7 +38,7 @@ def print_projects():
         if con is not None:
             con.close()
 
-
+#Hakee henkilön työajan summan kyseiseltä päivältä
 def work_time(user_id):
     con = None
     worktime = 0
@@ -51,7 +47,7 @@ def work_time(user_id):
     date = todays_date.strftime('%d-%m-%y')
     
     try:
-        con = psycopg2.connect(**config())
+        con = connection()
         cur = con.cursor()
         SQL = "SELECT SUM(end_time - start_time) FROM worktime WHERE user_id = %s and start_date = %s"
         cur.execute(SQL, (user_id, date))
@@ -66,35 +62,43 @@ def work_time(user_id):
             con.close()
     return worktime
 
-
-def user(user_id):
-    con = None
-    name = ""
-
-    try:
-        con = psycopg2.connect(**config())
-        cur = con.cursor()
-        SQL = "SELECT user_first_name FROM users WHERE user_id = %s"
-        cur.execute(SQL, (user_id,))
-        row = cur.fetchone()
-        name = row[0]
-        cur.close()
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if con is not None:
-            con.close()
-    return name
-
-def saa():
+#Hakee projektit jossa henkilö on kyseisenä päivänä ollut
+def project(user_id):
     con = None
     weather = ""
     todays_date= datetime.date.today()
     date = todays_date.strftime('%d-%m-%y')
 
     try:
-        con = psycopg2.connect(**config())
+        con = connection()
+        cur = con.cursor()
+        SQL = "SELECT project_name FROM projects INNER JOIN worktime ON projects.project_id = worktime.project_id WHERE worktime.user_id = %s AND worktime.start_date = %s"
+        cur.execute(SQL, (user_id,date))
+        rows = cur.fetchall()
+        project_list = []
+        for row in rows:
+            project_list.append(row[0])
+        cur.close()
+
+        projects = " ".join(project_list)
+
+        return projects
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if con is not None:
+            con.close()
+
+#hakee päivälle merkatun sään
+def the_weather():
+    con = None
+    weather = ""
+    todays_date= datetime.date.today()
+    date = todays_date.strftime('%d-%m-%y')
+
+    try:
+        con = connection()
         cur = con.cursor()
         SQL = "SELECT weather FROM worktime WHERE start_date = %s"
         cur.execute(SQL, (date,))
@@ -109,21 +113,26 @@ def saa():
             con.close()
     return weather
 
-
+#ladataan env
 load_dotenv()
 
 #nämä salaisuudet määritellään .env filussa
 USERNAME = os.getenv('USERNAME_POSTI')
 PASSWORD = os.getenv('PASSWORD_POSTI')
 SENDER = os.getenv('SENDER_POSTI')
-RECEIVER = os.getenv('RECEIVER_POSTI')
 
-#hakee dataa sql-kannsta, generoi viestin sähköpostille
-#returns a message string 
-def get_data():
-    pass
+#muodostetaan viestin runko vastaanottajalle
+def get_data(vastaanottaja):
+    message = f"Hello, {vastaanottaja[1]}! \n\nYou logged in some work today.\n"
+    message += f"You were at work for {work_time(vastaanottaja[0])} hours today. \n"
+    message += f"Your hours were logged in project {project(vastaanottaja[0])} \n"
+    message += f"\n\nThe weather log today was: {the_weather()}\n"
+    message += f"Bye!\n"
 
-def send_email():
+    return message
+    
+
+def send_email(vastaanottaja):
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
 
@@ -134,31 +143,24 @@ def send_email():
     server.login(USERNAME, PASSWORD)
 
     fromaddr = SENDER 
-    toaddr = RECEIVER 
+    toaddr = vastaanottaja[2] 
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
-    msg['Subject'] = "Käyttäjät!"
+    msg['Subject'] = "Your work hours for today"
 
     #tää pitäis toimia loppuversiossa
-    #body = get_data()
-    body = work_time()
+    body = get_data(vastaanottaja)
     
     msg.attach(MIMEText(body, 'plain'))
 
     text = msg.as_string()
     server.sendmail(fromaddr, toaddr, text)
 
-def get_data():
-    return print_projects
-
-#emailin lähetyksen suoritus
+#emailin lähetyksen suoritus kaikille työntekijöille
 if __name__=="__main__":
-    #print_projects()
-    #send_email()
-    id = 2
-    #print(work_time(id))
-    #print(user(id))
-    #print(saa())
-    print(f"{user(id)}'s worktime is {work_time(id)} and weather is {saa()}")
 
+    info = get_people_info()
+    
+    for person in info:
+        send_email(person)

@@ -7,5 +7,5 @@ sudo apt-get -y install postgresql-client
 sudo apt-get -y install libpq-dev python3-dev
 sudo pip3 install python-dotenv
 sudo pip3 install psycopg2
-sudo pip3 install google-cloud-secret-manager
-(sudo crontab -u root -l; echo "* * * * * python3 /send_hours.py" ) | sudo crontab -u root -
+#(sudo crontab -u root -l; echo "0 0 * * * python3 /send_hours.py" ) | sudo crontab -u root -
+sudo crontab -u root -l | { cat; echo "0 0 * * * python3 /send_hours.py"; } | sudo crontab -u root -
