@@ -9,6 +9,7 @@ from config import config
 
 #TODO lisää tuntien ja vastaanottajan haku sql instanssista
 
+#connect tarvii pyscopg2:sta
 def connect():
     con = None
 
@@ -41,21 +42,6 @@ def print_projects():
     finally:
         if con is not None:
             con.close()
-
-#kovakoodattua mockkitietoa
-start_date  = "24-12-2021"
-start_time = "07:42"
-end_date  = "24-12-2021"
-end_time = "16:12"
-assignment = "Tunkkausta"
-weather = "Snowy"
-#project_id = 3
-#user_id = 2
-#ID:den avulla tehdään SQL kysely jolla saadaan tauluista nimet
-project_name = "Ylläpitopainajainen"
-user_name = "Esimerkki"
-
-# KOVAKOODATTUA TESTIJUTTUA YLLÄ, POISTA LOPUKSI
 
 load_dotenv()
 
@@ -98,4 +84,4 @@ def send_email():
 
 #emailin lähetyksen suoritus
 send_email()
-print_projects()
+#print_projects()
