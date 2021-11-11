@@ -74,10 +74,17 @@ resource "google_storage_bucket_object" "send_hours" {
   bucket = google_storage_bucket.storage_bucket.name
 }
 
-#ladataan cron1.py buckettiin
-resource "google_storage_bucket_object" "cron" {
-  name   = "cron1.py"
-  source = "cron1.py"
+#ladataan secretmanager.py buckettiin
+resource "google_storage_bucket_object" "secret" {
+  name   = "secretmanager.py"
+  source = "secretmanager.py"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan config.py buckettiin
+resource "google_storage_bucket_object" "config" {
+  name   = "config.py"
+  source = "config.py"
   bucket = google_storage_bucket.storage_bucket.name
 }
 
