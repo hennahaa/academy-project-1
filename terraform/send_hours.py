@@ -138,12 +138,11 @@ def send_email():
     msg = MIMEMultipart()
     msg['From'] = fromaddr
     msg['To'] = toaddr
-    msg['Subject'] = "Käyttäjät!"
+    msg['Subject'] = "Tämän päivän työtunnit!"
 
     #tää pitäis toimia loppuversiossa
     #body = get_data()
-    body = work_time()
-    
+    body = tulostaja(3)
     msg.attach(MIMEText(body, 'plain'))
 
     text = msg.as_string()
@@ -152,13 +151,20 @@ def send_email():
 def get_data():
     return print_projects
 
+def tulostaja(user_id):
+    return f"{user(user_id)}'s worktime is {work_time(user_id)} and weather is {saa()}"
+
+
+
 #emailin lähetyksen suoritus
 if __name__=="__main__":
     #print_projects()
     #send_email()
-    id = 2
+    id = 0
     #print(work_time(id))
     #print(user(id))
     #print(saa())
-    print(f"{user(id)}'s worktime is {work_time(id)} and weather is {saa()}")
+    #print(tulostaja(id))
+    for i in range(1, 4):
+        print(tulostaja(i))
 
