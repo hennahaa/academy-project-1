@@ -74,24 +74,17 @@ resource "google_storage_bucket_object" "send_hours" {
   bucket = google_storage_bucket.storage_bucket.name
 }
 
-#ladataan secretmanager.py buckettiin
-resource "google_storage_bucket_object" "secret" {
-  name   = "secretmanager.py"
-  source = "secretmanager.py"
-  bucket = google_storage_bucket.storage_bucket.name
-}
-
-#ladataan config.py buckettiin
-resource "google_storage_bucket_object" "config" {
-  name   = "config.py"
-  source = "config.py"
-  bucket = google_storage_bucket.storage_bucket.name
-}
-
 #ladataan .env buckettiin
 resource "google_storage_bucket_object" "env" {
   name   = ".env"
   source = ".env"
+  bucket = google_storage_bucket.storage_bucket.name
+}
+
+#ladataan database buckettiin
+resource "google_storage_bucket_object" "secret" {
+  name   = "secretmanager.py"
+  source = "secretmanager.py"
   bucket = google_storage_bucket.storage_bucket.name
 }
 
@@ -103,7 +96,7 @@ resource "google_compute_instance" "vm_instance" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = "debian-cloud/debian-10"
     }
   }
 
@@ -121,6 +114,4 @@ resource "google_compute_instance" "vm_instance" {
 
   #startup.sh:n lataa paketit ja tiedostot instanssiin
   metadata_startup_script = file("startup.sh")
-  #allow_stopping_for_update = true
-
 }

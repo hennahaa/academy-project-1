@@ -1,5 +1,4 @@
 from google.cloud import secretmanager
-from send_hours import connect
 
 def access_secret_version(project_id, secret_id, version_id):
     client = secretmanager.SecretManagerServiceClient()
@@ -10,16 +9,13 @@ def access_secret_version(project_id, secret_id, version_id):
     # Access the secret version.
     response = client.access_secret_version(request={"name": name})
 
-    # Print the secret payload.
-    #
-    # WARNING: Do not print the secret in a production environment - this
-    # snippet is showing how to access the secret material.
     payload = response.payload.data.decode("UTF-8")
-    print("Plaintext: {}".format(payload))
 
-if __name__=="__main__":
-    connect()
-    projekti = "week5-group2"
-    secredid = "projekti1"
-    versionid = 2
-    access_secret_version()
+    return payload
+
+
+#if __name__=="__main__":
+#    projekti = os.getenv('PROJEKTI')
+#    secret_id = os.getenv('SECRET_ID')
+#    version_id = os.getenv('VERSION_ID')
+#    access_secret_version(projekti, secret_id, version_id)
