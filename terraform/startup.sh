@@ -1,16 +1,11 @@
 #! /bin/bash
-gsutil cp gs://projekti_ampari/*.py .
-gsutil cp gs://projekti_ampari/.env .
-sudo apt update
-sudo apt -y upgrade
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 2
-sudo apt -y install python3-pip
+sudo gsutil cp gs://projekti_ampari/*.py .
+sudo gsutil cp gs://projekti_ampari/.env .
+sudo apt-get update
+sudo apt-get -y upgrade
+sudo apt-get -y install python3-pip
+sudo apt-get -y install postgresql-client
 sudo pip3 install python-dotenv
-sudo pip3 install python-crontab
-python cron1.py
-
-
-#sudo apt-get install postgresql-client
-#export dbpass=`gcloud beta secrets versions access 1 --secret="projekti1"`
-#psql "sslmode=disable dbname=tuntikirjaus user=postgres hostaddr=10.0.1.3 password=$dbpass"
+sudo pip3 install psycopg2-binary
+line="* * * * * python3 /send_hours.py"
+(crontab -u $(whoami) -l; echo "$line" ) | crontab -u $(whoami) -
