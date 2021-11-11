@@ -12,10 +12,10 @@ Sovellus hakee joka päivä keskiyöllä työntekijän kyseisen päivän aikana 
 ![Kokonaiskuva](https://github.com/hennahaa/academy-project-1/blob/main/project1_kokonaiskuva.drawio.png)
 
 ### Frontend
-![Frontend-kuva](https://github.com/hennahaa/academy-project-1/tree/main/src/data/project1_sekvenssikaavio.drawio.png)
+![Frontend-kuva](https://github.com/hennahaa/academy-project-1/blob/main/src/data/project1_sekvenssikaavio.drawio.png)
 
 ### Tietokanta
-![Tietokanta-kuva](https://github.com/hennahaa/academy-project-1/tree/main/src/data/sql-database-draw.png)
+![Tietokanta-kuva](https://github.com/hennahaa/academy-project-1/blob/main/src/data/sql-database-draw.png)
 
 ### Backend
 ![Backend-kuva](https://github.com/hennahaa/academy-project-1/blob/main/terraform/backend.png)
