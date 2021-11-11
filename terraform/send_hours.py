@@ -7,7 +7,7 @@ import os
 import psycopg2
 from config import config
 
-#TODO lisää tuntien ja vastaanottajan haku sql instanssista
+load_dotenv()
 
 #connect tarvii pyscopg2:sta
 def connect():
@@ -42,8 +42,6 @@ def print_projects():
     finally:
         if con is not None:
             con.close()
-
-load_dotenv()
 
 #nämä salaisuudet määritellään .env filussa
 USERNAME = os.getenv('USERNAME_POSTI')
