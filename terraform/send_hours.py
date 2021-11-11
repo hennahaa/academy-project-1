@@ -46,7 +46,7 @@ def print_projects():
 def work_time(user_id):
     con = None
     worktime = 0
-    name = ""
+
     todays_date= datetime.date.today()
     date = todays_date.strftime('%d-%m-%y')
     
@@ -64,6 +64,12 @@ def work_time(user_id):
     finally:
         if con is not None:
             con.close()
+    return worktime
+
+
+def user(user_id):
+    con = None
+    name = ""
 
     try:
         con = psycopg2.connect(**config())
@@ -79,14 +85,30 @@ def work_time(user_id):
     finally:
         if con is not None:
             con.close()
+    return name
 
+def saa():
+    con = None
+    weather = ""
+    todays_date= datetime.date.today()
+    date = todays_date.strftime('%d-%m-%y')
 
+    try:
+        con = psycopg2.connect(**config())
+        cur = con.cursor()
+        SQL = "SELECT weather FROM worktime WHERE start_date = %s"
+        cur.execute(SQL, (date,))
+        row = cur.fetchone()
+        weather = row[0]
+        cur.close()
 
-    return f"{name}'s worktime today was {worktime}"
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if con is not None:
+            con.close()
+    return weather
 
-
-
-# KOVAKOODATTUA TESTIJUTTUA YLLÄ, POISTA LOPUKSI
 
 load_dotenv()
 
@@ -135,4 +157,8 @@ if __name__=="__main__":
     #print_projects()
     #send_email()
     id = 2
-    print(work_time(id))
+    #print(work_time(id))
+    #print(user(id))
+    #print(saa())
+    print(f"{user(id)}'s worktime is {work_time(id)} and weather is {saa()}")
+
