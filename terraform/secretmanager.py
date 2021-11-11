@@ -15,11 +15,12 @@ def access_secret_version(project_id, secret_id, version_id):
     # WARNING: Do not print the secret in a production environment - this
     # snippet is showing how to access the secret material.
     payload = response.payload.data.decode("UTF-8")
-    print("Plaintext: {}".format(payload))
+    #print("Password: {}".format(payload))
+    return payload
 
 if __name__=="__main__":
     connect()
     projekti = "week5-group2"
     secredid = "projekti1"
-    versionid = 2
-    access_secret_version()
+    versionid = 1
+    access_secret_version(projekti, secredid, versionid)
