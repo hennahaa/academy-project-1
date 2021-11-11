@@ -131,7 +131,7 @@ def get_data(vastaanottaja):
 
     return message
     
-
+#emailin lähetys
 def send_email(vastaanottaja):
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
