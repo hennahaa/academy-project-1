@@ -77,7 +77,5 @@ resource "google_compute_instance" "vm_instance" {
     access_config {
     }
   }
-
-  #startup.sh:n sisältö ei vielä relevantti
-  #metadata_startup_script = file("startup.sh")
+  metadata_startup_script = file("startup.sh")
 }
